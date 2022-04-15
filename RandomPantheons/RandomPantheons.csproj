@@ -9,23 +9,26 @@
         <Version>1.0.0.0</Version>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>..\..\..\References\Assembly-CSharp.dll</HintPath>
+        <Reference Include="Assembly-CSharp">
+          <HintPath>..\..\1.5Moddingapi\Assembly-CSharp.dll</HintPath>
         </Reference>
-        <Reference Include="MMHOOK_Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-          <HintPath>..\..\..\References\MMHOOK_Assembly-CSharp.dll</HintPath>
+        <Reference Include="MMHOOK_Assembly-CSharp">
+          <HintPath>..\..\1.5Moddingapi\MMHOOK_Assembly-CSharp.dll</HintPath>
         </Reference>
-        <Reference Include="PlayMaker, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>..\..\..\References\PlayMaker.dll</HintPath>
+        <Reference Include="MMHOOK_PlayMaker">
+          <HintPath>..\..\1.5Moddingapi\MMHOOK_PlayMaker.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>..\..\..\References\UnityEngine.dll</HintPath>
+        <Reference Include="PlayMaker">
+          <HintPath>..\..\1.5Moddingapi\PlayMaker.dll</HintPath>
         </Reference>
-        <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>..\..\..\References\UnityEngine.CoreModule.dll</HintPath>
+        <Reference Include="UnityEngine">
+          <HintPath>..\..\1.5Moddingapi\UnityEngine.dll</HintPath>
         </Reference>
-        <Reference Include="Vasi, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null">
-            <HintPath>..\..\..\References\Mods\Vasi.dll</HintPath>
+        <Reference Include="UnityEngine.CoreModule">
+          <HintPath>..\..\1.5Moddingapi\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+        <Reference Include="Vasi">
+          <HintPath>..\..\1.5Moddingapi\Vasi.dll</HintPath>
         </Reference>
     </ItemGroup>
 
