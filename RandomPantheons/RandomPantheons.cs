@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Modding;
 using JetBrains.Annotations;
@@ -11,15 +11,6 @@ namespace RandomPantheons
     [UsedImplicitly]
     public class RandomPantheons : Mod, ITogglableMod
     {
-        private static readonly List<string> Blacklist = new()
-        {
-            "GG_Unn",
-            "GG_Wyrm",
-            "GG_Engine",
-            "GG_Engine_Prime",
-            "GG_Engine_Root",
-        };
-
         // Some scenes cause issues when first.
         private static readonly List<string> InvalidFirst = new()
         {
@@ -33,8 +24,36 @@ namespace RandomPantheons
         // Some scenes cause issues when last
         private static readonly List<string> InvalidLast = new()
         {
+            // Can't leave
+            "GG_Unn",
+            "GG_Wyrm",
+            "GG_Engine",
+            "GG_Engine_Prime",
+            "GG_Engine_Root",
             // Causes an infinite loop
+            "GG_Spa"
+        };
+
+        // Some scenes cause HUD to disappear
+        private static readonly List<string> VanishedHUD = new()
+        {
+            "GG_Hollow_Knight",
+            "GG_Radiance"
+        };
+
+        // Some scenes let HUD to re-appear
+        private static readonly List<string> AppearedHUD = new()
+        {
+            "GG_Unn",
+            "GG_Wyrm",
+            "GG_Engine",
+            "GG_Engine_Prime",
+            "GG_Engine_Root",
             "GG_Spa",
+            "GG_Grimm",
+            "GG_Grimm_Nightmare",
+            "GG_Hollow_Knight",
+            "GG_Radiance"
         };
 
         private readonly Random _rand = new Random();
@@ -74,47 +93,27 @@ namespace RandomPantheons
 
             ref BossScene[] bossScenes = ref Mirror.GetFieldRef<BossSequence, BossScene[]>(seq, "bossScenes");
 
-            List<BossScene> scenes = bossScenes
-                                     .Where(x => !Blacklist.Contains(x.sceneName))
-                                     .OrderBy(_ => _rand.Next())
-                                     .ToList();
-            
-            const string bench = "GG_Spa";
+            List<BossScene> scenes = bossScenes.ToList();
 
-            while (InvalidFirst.Contains(scenes[0].sceneName))
+            while (true)
             {
-                BossScene first = scenes[0];
-
-                scenes.RemoveAt(0);
-
-                scenes.Insert(_rand.Next(1, scenes.Count), first);
-            }
-            
-            while (InvalidLast.Contains(scenes[scenes.Count - 1].sceneName))
-            {
-                BossScene last = scenes[scenes.Count-1];
-                
-                scenes.RemoveAt(scenes.Count - 1);
-
-                scenes.Insert(_rand.Next(1, scenes.Count - 1), last);
-            }
-
-            // Multiple benches in a row causes an infinite loop.
-            for (int i = 0; i < scenes.Count - 1; i++)
-            {
-                if
-                (
-                    scenes[i].sceneName != bench
-                    || scenes[i].sceneName != scenes[i + 1].sceneName
-                )
+                // Fisher–Yates shuffle
+                for (int i = scenes.Count - 1; i > 0; i--)
                 {
-                    continue;
+                    int x = _rand.Next(0, i + 1);
+                    BossScene tmp = scenes[i];
+                    scenes[i] = scenes[x];
+                    scenes[x] = tmp;
                 }
-
-                scenes.RemoveAt(i);
-
-                // Move the cursor one back, because otherwise we'll skip over an element.
-                i--;
+                // Check the conditions
+                bool f = InvalidFirst.Contains(scenes[0].sceneName) ||
+                         InvalidLast.Contains(scenes[scenes.Count - 1].sceneName);
+                for (int i = 1; i < scenes.Count; i++)
+                    if (scenes[i - 1].sceneName == scenes[i].sceneName ||
+                        VanishedHUD.Contains(scenes[i - 1].sceneName) && !AppearedHUD.Contains(scenes[i].sceneName))
+                        f = true;
+                if (!f)
+                    break;
             }
 
             bossScenes = scenes.ToArray();
