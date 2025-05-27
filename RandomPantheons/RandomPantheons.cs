@@ -12,19 +12,17 @@ namespace RandomPantheons
     public class RandomPantheons : Mod, ITogglableMod
     {
         // Some scenes cause issues when first.
-        private static readonly List<string> InvalidFirst = new()
-        {
-            // Causes an infinite loop
+        private static readonly List<string> InvalidFirst =
+        [
             "GG_Spa",
             // Doesn't wake up
             "GG_Gruz_Mother",
             "GG_Gruz_Mother_V"
-        };
+        ];
 
         // Some scenes cause issues when last
-        private static readonly List<string> InvalidLast = new()
-        {
-            // Can't leave
+        private static readonly List<string> InvalidLast =
+        [
             "GG_Unn",
             "GG_Wyrm",
             "GG_Engine",
@@ -32,18 +30,18 @@ namespace RandomPantheons
             "GG_Engine_Root",
             // Causes an infinite loop
             "GG_Spa"
-        };
+        ];
 
         // Some scenes cause HUD to disappear
-        private static readonly List<string> VanishedHUD = new()
-        {
+        private static readonly List<string> VanishedHUD =
+        [
             "GG_Hollow_Knight",
             "GG_Radiance"
-        };
+        ];
 
         // Some scenes let HUD to re-appear
-        private static readonly List<string> AppearedHUD = new()
-        {
+        private static readonly List<string> AppearedHUD =
+        [
             "GG_Unn",
             "GG_Wyrm",
             "GG_Engine",
@@ -54,9 +52,9 @@ namespace RandomPantheons
             "GG_Grimm_Nightmare",
             "GG_Hollow_Knight",
             "GG_Radiance"
-        };
+        ];
 
-        private readonly Random _rand = new Random();
+        private readonly Random _rand = new();
 
         public override string GetVersion() => VersionUtil.GetVersion<RandomPantheons>();
 
@@ -75,25 +73,24 @@ namespace RandomPantheons
         private static void ModifyRadiance(On.PlayMakerFSM.orig_Start orig, PlayMakerFSM self)
         {
             orig(self);
-            
-            if (self is { name: "Absolute Radiance", FsmName: "Control" }) 
+
+            if (self is { name: "Absolute Radiance", FsmName: "Control" })
             {
                 // Modify this action to leave p5 like the other doors
                 self.GetAction<SetStaticVariable>("Ending Scene", 1).setValue.boolValue = false;
             }
         }
 
-        private void RandomizeSequence
-        (
+        private void RandomizeSequence(
             On.BossSequenceDoor.orig_Start orig,
             BossSequenceDoor self
         )
         {
-            BossSequence seq = self.bossSequence;
+            var seq = self.bossSequence;
 
-            ref BossScene[] bossScenes = ref Mirror.GetFieldRef<BossSequence, BossScene[]>(seq, "bossScenes");
+            ref var bossScenes = ref Mirror.GetFieldRef<BossSequence, BossScene[]>(seq, "bossScenes");
 
-            List<BossScene> scenes = bossScenes.ToList();
+            var scenes = bossScenes.ToList();
 
             while (true)
             {
@@ -101,17 +98,18 @@ namespace RandomPantheons
                 for (int i = scenes.Count - 1; i > 0; i--)
                 {
                     int x = _rand.Next(0, i + 1);
-                    BossScene tmp = scenes[i];
-                    scenes[i] = scenes[x];
-                    scenes[x] = tmp;
+                    (scenes[i], scenes[x]) = (scenes[x], scenes[i]);
                 }
+
                 // Check the conditions
                 bool f = InvalidFirst.Contains(scenes[0].sceneName) ||
                          InvalidLast.Contains(scenes[scenes.Count - 1].sceneName);
+                
                 for (int i = 1; i < scenes.Count; i++)
                     if (scenes[i - 1].sceneName == scenes[i].sceneName ||
                         VanishedHUD.Contains(scenes[i - 1].sceneName) && !AppearedHUD.Contains(scenes[i].sceneName))
                         f = true;
+                
                 if (!f)
                     break;
             }
