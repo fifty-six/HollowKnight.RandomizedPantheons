@@ -16,6 +16,11 @@ namespace RandomPantheons
         // Some scenes cause issues when first.
         private static readonly List<string> InvalidFirst =
         [
+            "GG_Unn",
+            "GG_Wyrm",
+            "GG_Engine",
+            "GG_Engine_Prime",
+            "GG_Engine_Root",
             "GG_Spa",
             // Doesn't wake up
             "GG_Gruz_Mother",
@@ -112,10 +117,11 @@ namespace RandomPantheons
                 }
 
                 // Check the conditions
-                bool f = InvalidFirst.Contains(scenes[0].sceneName) 
-                      || InvalidLast.Contains(scenes[scenes.Count - 1].sceneName);
-                
-                if (!f)
+                bool invalid = InvalidFirst.Contains(scenes[0].sceneName)
+                            || InvalidLast.Contains(scenes[scenes.Count - 1].sceneName)
+                            || scenes.Zip(scenes.Skip(1), (a, b) => a.sceneName == "GG_Spa" && b.sceneName == "GG_Spa").Any(x => x);
+
+                if (!invalid)
                     break;
             }
 
